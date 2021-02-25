@@ -1,50 +1,93 @@
 package com.company;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class Library extends Main{
 
-    int totalBooks, signUpDays, bookScannedPerDay;
-    int[] bookID;//assuming that the bookId is also the book's score
-    boolean isSignedUp;
 
-    //initializing the necessary requirements for a Library
-    Library(int signUpDays, int totalBooks, int bookScannedPerDay, int bookID[]){
+    ArrayList<Integer> bookID;
+    int totalBooks, signUpDays, bookScannedPerDay;
+    boolean isSignedUp;
+    int signUpInitial, signUpFinal;
+    int libID;
+    int availableDays;
+    ArrayList<Integer> booksScanned;
+
+
+    Library( int libID,int signUpDays, int bookScannedPerDay, ArrayList<Integer> bookID){
         this.bookScannedPerDay = bookScannedPerDay;
-        this.totalBooks = totalBooks;
+        this.totalBooks = bookID.size();
         this.signUpDays = signUpDays;
-        //assuming that the array containing book ids is already given
-        this.bookID = bookID.clone();
-        //in the above process i am cloning the array of the book id that will be given as input in another array for further calculations
-        //the process for getting book id is shown below, you can use someother method but pls make sure that it's an array.
-        //this.bookID = new int[totalBooks];//this is the process of getting the book id and should will be done during the input,
-        //make sure to get the id in array and give that array for this process.
-        //also input all the data like bookId and etc in the Main class
+        this.bookID = bookID;
         this.isSignedUp = false;
+        this.libID = libID;
+        availableDays=D;
+        booksScanned = new ArrayList<>();
     }
-    int bookScore(){
-        //calculating avaliable days for a library
-        int avaliableDays = totalDays - signUpDays;
-        //counting how many books can be scanned in the avaliableDays
-        int booksScannedInTotalAvaliableDays = avaliableDays*bookScannedPerDay;
-        //sorting the books according to their ID(or Score)
-        Arrays.sort(bookID);
-        //making an array which will hold the books to be scanned in the given days according to their score
-        int[] booksToBeScanned = new int[booksScannedInTotalAvaliableDays];
-        for(int i=0;i<booksToBeScanned.length;i++){
-            booksToBeScanned[i] = bookID[i];
+
+
+    public int getLibID() {
+        return libID;
+    }
+
+    int libraryAvailableDays(){
+        return availableDays;
+    }
+
+    public void signUp(){
+        isSignedUp=true;
+        signUpInitial=currentDay;
+        signUpFinal=currentDay+signUpDays;
+        currentDay+=signUpDays;
+        availableDays = D - signUpFinal+1;
+    }
+    public void signUpFake(int currentDay){
+
+        signUpInitial=currentDay;
+        signUpFinal=currentDay+signUpDays;
+        availableDays = D - signUpFinal+1;
+    }
+
+
+    public  void scan(){
+        booksScanned = new ArrayList<>();
+        Collections.sort(bookID, Collections.reverseOrder());
+        int totalBooksCanBeScanned = availableDays*bookScannedPerDay;
+
+
+        if(totalBooksCanBeScanned>totalBooks){
+            for(int i=0;i<totalBooks;i++){
+                booksScanned.add(bookID.get(i));
+                //availableDays--;
+            }
         }
-        //copying booksToBeScanned array into bookID array
-        this.bookID = booksToBeScanned.clone();
-        //summing the book score for all the books that will be scanned only
-        int bookScore = 0;
-        for(int i=0;i<bookID.length;i++)
-            bookScore = bookScore+bookID[i];
-        return bookScore;
+        else{
+            for(int i=0;i<totalBooksCanBeScanned;i++){
+                booksScanned.add(bookID.get(i));
+                //availableDays--;
+            }
+        }
+
     }
-    int LibraryScore(){
-        //to find library score based on the book score
-        return (bookScore()/signUpDays);
+
+    public int getTotalBookScore(){
+        int score=0;
+        for(int x:booksScanned)
+            score+=x;
+        return score;
     }
+    public ArrayList<Integer> getCommons(ArrayList<Integer> other){
+        ArrayList<Integer> commons = new ArrayList<>();
+        for(int i: booksScanned){
+            if(other.contains(i)){
+                commons.add(i);
+            }
+        }
+        Collections.sort(other, Collections.reverseOrder());
+        return commons;
+    }
+
+
+
 }
